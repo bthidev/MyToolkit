@@ -5,8 +5,13 @@ namespace ToolKit.Entities
 {
     public class User
     {
+        [JsonIgnore]
+        public int Id { get; set; }
+        [JsonIgnore]
+        public string Password { get; set; }
         [JsonPropertyName("username")]
         public string Username { get; set; }
+        [JsonPropertyName("token")]
         public string Token { get; set; }
         [JsonPropertyName("role")]
         public IEnumerable<string> Role { get; set; }
