@@ -43,7 +43,7 @@ namespace ToolKit.Services
             var http = new HttpClient();
             var token = authorizationHeader.Substring(6).Trim();
             http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var infoServer = await http.GetJsonAsync<User>(_baseUrl + "/users/UserInfo");
+            var infoServer = await http.GetJsonAsync<User>(this.Options.AuthUrl + "/users/UserInfo");
             if( infoServer is null ) return AuthenticateResult.NoResult();
             // create a ClaimsPrincipal from your header
             List<Claim> claims = new List<Claim>
