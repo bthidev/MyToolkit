@@ -22,7 +22,7 @@ namespace ToolKit.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticateModel model)
         {
-            User user = await _userService.Authenticate(model.Username, model.Password);
+            User user = await _userService.Authenticate(model.username, model.password);
 
             if (user == null)
             {
@@ -43,7 +43,7 @@ namespace ToolKit.Controllers
         [HttpPost("createUser")]
         public IActionResult CreateUser([FromBody] AuthenticateModel username)
         {
-            if (_userService.CreateUser(username.Username, username.Password))
+            if (_userService.CreateUser(username.username, username.password))
             {
                 return Ok();
             }

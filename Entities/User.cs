@@ -11,7 +11,7 @@ namespace ToolKit.Entities
         public string Password { get; set; }
         [JsonPropertyName("username")]
         public string Username { get; set; }
-        [JsonPropertyName("token")]
+        [JsonPropertyName("access")]
         public string Token { get; set; }
         [JsonPropertyName("role")]
         public IEnumerable<string> Role { get; set; }
