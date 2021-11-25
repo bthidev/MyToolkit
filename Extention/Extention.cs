@@ -11,6 +11,7 @@ namespace Toolkit.Extention
         static public async Task<T> GetJsonAsync<T>(this HttpClient client, string url)
         {
             var temp = await client.GetAsync(url);
+            var test = await temp.Content.ReadAsStringAsync();
             if (temp.IsSuccessStatusCode)
             {
                 var str = await temp.Content.ReadAsStringAsync();
