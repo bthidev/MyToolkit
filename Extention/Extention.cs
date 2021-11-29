@@ -10,12 +10,14 @@ namespace Toolkit.Extention
     {
         static public async Task<T> GetJsonAsync<T>(this HttpClient client, string url)
         {
+            client.Timeout = TimeSpan.FromMinutes(30);
             var temp = await client.GetAsync(url);
             var test = await temp.Content.ReadAsStringAsync();
             if (temp.IsSuccessStatusCode)
             {
                 var str = await temp.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<T>(str);
+                var array = JsonSerializer.Deserialize<T>(str);
+                return array;
             }
             else 
                 return default(T);
