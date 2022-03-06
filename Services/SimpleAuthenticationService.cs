@@ -41,7 +41,7 @@ namespace ToolKit.Services
             string authorizationHeader = Request.Headers["Authorization"];
             if( string.IsNullOrEmpty(authorizationHeader)) return AuthenticateResult.NoResult();
             var http = new HttpClient();
-            var token = authorizationHeader;//.Substring(6).Trim();
+            var token = authorizationHeader.Substring(6).Trim();
             http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var infoServer = await http.GetJsonAsync<User>(this.Options.AuthUrl + "/users/UserInfo/");
             if( infoServer is null ) return AuthenticateResult.NoResult();
