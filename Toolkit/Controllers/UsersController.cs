@@ -20,9 +20,9 @@ namespace ToolKit.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] AuthenticateModel model)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
-            User user = await _userService.Authenticate(model.username, model.password);
+            var user = await _userService.AuthenticateAsync(model.Username, model.Password).ConfigureAwait(true);
 
             if (user == null)
             {
@@ -35,15 +35,14 @@ namespace ToolKit.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            // var users = _userService.GetAll();
             return Ok(null);
         }
 
         [AllowAnonymous]
         [HttpPost("createUser")]
-        public IActionResult CreateUser([FromBody] AuthenticateModel username)
+        public async Task<IActionResult> CreateUserAsync([FromBody] AuthenticateModel username)
         {
-            if (_userService.CreateUser(username.username, username.password))
+            if (await _userService.CreateUserAsync(username.Username, username.Password).ConfigureAwait(true))
             {
                 return Ok();
             }

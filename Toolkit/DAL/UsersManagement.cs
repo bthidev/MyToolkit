@@ -16,54 +16,47 @@ namespace ToolKit.DAL
             _db = dbBin;
         }
 
-        public async Task<bool> CreateUser(string username, string password, string role)
+        public async Task<bool> CreateUserAsync(string username, string password)
         {
-            using (IServiceScope scope = _db.CreateScope())
+            using var scope = _db.CreateScope();
+            var um = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
+            var context = scope.ServiceProvider.GetService<IdentityDbContext>();
+            if (!context.Users.Any(x => x.UserName.Contains(username)))
             {
-                UserManager<IdentityUser> um = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
-                IdentityDbContext context = scope.ServiceProvider.GetService<IdentityDbContext>();
-                if (!context.Users.Any(x => x.UserName.Contains(username)))
+                var user = new IdentityUser
                 {
-                    IdentityUser user = new IdentityUser();
-                    user.Email = username;
-                    user.UserName = username;
-                    var result = await um.CreateAsync(user, password);
-                    context.SaveChanges();
-                    return result.Succeeded;
-                }
-
-                return false;
+                    Email = username,
+                    UserName = username
+                };
+                var result = await um.CreateAsync(user, password).ConfigureAwait(true);
+                context.SaveChanges();
+                return result.Succeeded;
             }
+
+            return false;
         }
 
-        public async Task<IdentityUser> GetUser(string username, string pass)
+        public async Task<IdentityUser> GetUserAsync(string username, string pass)
         {
-            using (IServiceScope scope = _db.CreateScope())
+            using var scope = _db.CreateScope();
+            var context = scope.ServiceProvider.GetService<IdentityDbContext>();
+            var user = context.Users.Where(w => w.Email == username).FirstOrDefault();
+            var passwordValidator = new PasswordValidator<IdentityUser>();
+            var userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
+            var result = await passwordValidator.ValidateAsync(userManager, user, pass).ConfigureAwait(true);
+            if (result.Succeeded)
             {
-                IdentityDbContext context = scope.ServiceProvider.GetService<IdentityDbContext>();
-                IdentityUser user = context.Users.Where(w => w.Email == username).FirstOrDefault();
-                PasswordValidator<IdentityUser> passwordValidator = new PasswordValidator<IdentityUser>();
-                UserManager<IdentityUser> userManager = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
-                IdentityResult result = await passwordValidator.ValidateAsync(userManager, user, pass);
-                if (result.Succeeded)
-                {
-                    return user;
-                }
-                else
-                {
-                    return null;
-                }
+                return user;
             }
+
+            return null;
         }
 
-        public async Task<IEnumerable<string>> GetUserRole(IdentityUser user)
+        public async Task<IEnumerable<string>> GetUserRoleAsync(IdentityUser user)
         {
-            using (IServiceScope scope = _db.CreateScope())
-            {
-                UserManager<IdentityUser> context = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
-                return await context.GetRolesAsync(user);
-
-            }
+            using var scope = _db.CreateScope();
+            var context = scope.ServiceProvider.GetService<UserManager<IdentityUser>>();
+            return await context.GetRolesAsync(user).ConfigureAwait(true);
         }
     }
 }

@@ -1,34 +1,31 @@
-﻿using System;
+using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Security.Cryptography;
+using System.Threading.Tasks;
+
 namespace Toolkit.Extention
 {
     public static class Extention
     {
-        static public async Task<T> GetJsonAsync<T>(this HttpClient client, string url)
+        public static async Task<T> GetJsonAsync<T>(this HttpClient client, string url)
         {
             client.Timeout = TimeSpan.FromMinutes(30);
-            var temp = await client.GetAsync(url);
-            var test = await temp.Content.ReadAsStringAsync();
+            var temp = await client.GetAsync(url).ConfigureAwait(true);
+            _ = await temp.Content.ReadAsStringAsync().ConfigureAwait(true);
             if (temp.IsSuccessStatusCode)
             {
-                var str = await temp.Content.ReadAsStringAsync();
-                var array = JsonSerializer.Deserialize<T>(str);
-                return array;
+                var str = await temp.Content.ReadAsStringAsync().ConfigureAwait(true);
+                return JsonSerializer.Deserialize<T>(str);
             }
-            else 
-                return default(T);
+
+            return default;
         }
-        static public async Task<T> PostJsonAsync<T>(this HttpClient client, string url, StringContent content)
+
+        public static async Task<T> PostJsonAsync<T>(this HttpClient client, string url, StringContent content)
         {
-            var temp = await client.PostAsync(url, content);
-            var tempSring = await temp.Content.ReadAsStringAsync();
+            var temp = await client.PostAsync(url, content).ConfigureAwait(true);
+            var tempSring = await temp.Content.ReadAsStringAsync().ConfigureAwait(true);
             return JsonSerializer.Deserialize<T>(tempSring);
         }
-
-
     }
 }

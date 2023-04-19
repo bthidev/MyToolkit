@@ -21,7 +21,7 @@ namespace ToolKit
                 })
                 .AddJwtBearer(jwt =>
                 {
-                    byte[] key = Encoding.ASCII.GetBytes(secret);
+                    var key = Encoding.ASCII.GetBytes(secret);
                     jwt.SaveToken = true;
                     jwt.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -31,14 +31,15 @@ namespace ToolKit
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         RequireExpirationTime = false,
-                        ValidateLifetime = true
+                        ValidateLifetime = true,
                     };
                 });
 
             services.AddSingleton<UsersManagement>();
             services.AddSingleton<IUserService>(x =>
-                    new UserService(secret,
-                    x.GetRequiredService<UsersManagement>()));
+                    new UserService(
+                        secret,
+                        x.GetRequiredService<UsersManagement>()));
             services.AddMvc().AddApplicationPart(typeof(UsersController).Assembly);
             return services;
         }
