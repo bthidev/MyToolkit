@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace ToolKit.Services
 {
@@ -15,16 +15,16 @@ namespace ToolKit.Services
             _logger = loggerFactory.CreateLogger<RequestLoggingMiddleware>();
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(context);
+                await _next(context).ConfigureAwait(true);
             }
             finally
             {
                 _logger.LogInformation(
-                    "Request {method} {url} => {statusCode}",
+                    "Request {Method} {Url} => {StatusCode}",
                     context.Request?.Method,
                     context.Request?.Path.Value,
                     context.Response?.StatusCode);
