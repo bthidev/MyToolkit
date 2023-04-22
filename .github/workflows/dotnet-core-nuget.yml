@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set Version
       run: echo "PACKAGE_VERSION=${{ env.VERSION }}.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
-      - name: Display Version
+    - name: Display Version
       run: echo $PACKAGE_VERSION    
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
