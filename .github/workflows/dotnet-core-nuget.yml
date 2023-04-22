@@ -32,10 +32,10 @@ jobs:
       run: |
         mkdir "$GITHUB_WORKSPACE/artifacts"
         mkdir "$GITHUB_WORKSPACE/artifacts/Toolkit"
-    - name: Publish OctoPetShopDatabase
-      run: dotnet publish Toolkit/Toolkit.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/Toolkit.OctoPetShop.Database"
+    - name: Publish Toolkit
+      run: dotnet publish Toolkit/Toolkit.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/Toolkit"
 
-    - name: Pack OctoPetShopDatabase
+    - name: Pack Toolkit
       run: |
         dotnet pack Toolkit/Toolkit.csproj --configuration Release --include-source --include-symbols --no-build --output "$GITHUB_WORKSPACE/artifacts/Toolkit" -p:PackageVersion=$PACKAGE_VERSION
 
@@ -45,7 +45,7 @@ jobs:
         dotnet-version: '7.0.x'
     - name: Add source
       run: |
-        dotnet nuget add source "https://nuget.pkg.github.com/bthidev/index.json" --username v --password ${{ secrets.pat_token }} --store-password-in-clear-text --name github 
+        dotnet nuget add source "https://nuget.pkg.github.com/bthidev/index.json" --username bthidev --password ${{ secrets.pat_token }} --store-password-in-clear-text --name github 
     - name: Push packages to GitHub Packages NuGet feed
       run: |
         dotnet nuget push "$GITHUB_WORKSPACE/artifacts/Toolkit/Toolkit.$PACKAGE_VERSION.nupkg"  --api-key ${{ secrets.pat_token }} --source "github"
