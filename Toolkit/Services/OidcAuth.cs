@@ -9,7 +9,7 @@ namespace Toolkit.Services
 {
     public static class OidcAuth
     {
-        public static void AddAuthThidev(IServiceCollection services)
+        public static void AddAuthThidev(this IServiceCollection services)
         {
             services.AddAuthentication()
                     .AddJwtBearer(x =>
