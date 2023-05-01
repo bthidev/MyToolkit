@@ -17,8 +17,6 @@ namespace Toolkit.DAL.Mongo
 
         TEntity Get(Guid guid);
 
-        Task<IEnumerable<TEntity>> GetAsync(Guid first, Guid second, params Guid[] other);
-
         Task<TEntity> GetAsync(Guid guid);
 
         Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter = null);

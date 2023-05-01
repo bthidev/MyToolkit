@@ -35,13 +35,6 @@ namespace Toolkit.DAL.Mongo
                 AssignIdOnInsert = true,
             });
 
-        public async Task<IEnumerable<TEntity>> GetAsync(Guid first, Guid second, params Guid[] other)
-        {
-            var guids = other.Prepend(second).Prepend(first).ToArray();
-            return await (await Collection.FindAsync(x => guids.Contains(x.Id)).ConfigureAwait(false))
-                            .ToListAsync().ConfigureAwait(false);
-        }
-
         public virtual Task CreateAsync(params TEntity[] entities)
         {
             return Collection.InsertManyAsync(entities);
