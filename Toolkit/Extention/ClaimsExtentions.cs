@@ -10,7 +10,7 @@ namespace ToolKit.Extention
         {
             var claims = user.Claims.ToList();
             return claims?.
-                    FirstOrDefault(x =>
+                    Find(x =>
                         x.Type.Equals("preferred_username", StringComparison.OrdinalIgnoreCase))?.Value;
         }
     }

@@ -9,12 +9,12 @@ namespace Toolkit.Services
 {
     public static class OidcAuth
     {
-        public static void AddAuthThidev(this IServiceCollection services)
+        public static void AddAuthThidev(this IServiceCollection services, string authUrl, string adminRole)
         {
             services.AddAuthentication()
                     .AddJwtBearer(x =>
                     {
-                        x.MetadataAddress = "https://auth.thidev.fr/auth/realms/thidev/.well-known/openid-configuration";
+                        x.MetadataAddress = authUrl;
                         x.RequireHttpsMetadata = false;
                         x.TokenValidationParameters = new TokenValidationParameters
                         {
@@ -27,9 +27,13 @@ namespace Toolkit.Services
                     .RequireAuthenticatedUser()
                     .Build();
 
-                o.AddPolicy("admins", policy => policy.RequireAssertion(context =>
-                            context.User.HasClaim(claim => claim.Type == "realm_access" && JsonSerializer.Deserialize<KeyclokeRole>(claim.Value).Roles.Contains("admin"))));
+                o.AddPolicy(adminRole, policy => policy.RequireAssertion(context => NewMethod(adminRole, context)));
             });
+        }
+
+        private static bool NewMethod(string adminRole, AuthorizationHandlerContext context)
+        {
+            return context.User.HasClaim(claim => claim.Type == "groups" && claim.Value.Contains(adminRole));
         }
     }
 }
