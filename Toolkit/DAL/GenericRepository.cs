@@ -58,7 +58,7 @@ namespace ToolKit.DAL
 
         public TDto GetById(Guid id)
         {
-            var entity = _dbSet.Find(id);
+            var entity = _dbSet.First(e => e.Id == id);
             return _mapper.Map<TDto>(entity);
         }
 
@@ -70,6 +70,7 @@ namespace ToolKit.DAL
 
                 if (entity.Id == Guid.Empty)
                 {
+                    entity.Id = new Guid();
                     _dbSet.Add(entity);
                 }
                 else
