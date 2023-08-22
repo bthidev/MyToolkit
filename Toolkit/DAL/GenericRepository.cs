@@ -22,7 +22,7 @@ namespace ToolKit.DAL
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public FilterResult<TDto> GetFilteredWithPagination(Func<TEntity, bool> filter, int page, int pageSize, object option)
+        public virtual FilterResult<TDto> GetFilteredWithPagination(Func<TEntity, bool> filter, int page, int pageSize, object option)
         {
             var filteredEntities = _dbSet.Where(filter).AsQueryable();
 
@@ -56,13 +56,13 @@ namespace ToolKit.DAL
             return query;
         }
 
-        public TDto GetById(Guid id)
+        public virtual TDto GetById(Guid id)
         {
             var entity = _dbSet.First(e => e.Id == id);
             return _mapper.Map<TDto>(entity);
         }
 
-        public void UpdateOrCreate(IEnumerable<TDto> dtos)
+        public virtual void UpdateOrCreate(IEnumerable<TDto> dtos)
         {
             foreach (var dto in dtos)
             {
@@ -70,7 +70,7 @@ namespace ToolKit.DAL
 
                 if (entity.Id == Guid.Empty)
                 {
-                    entity.Id = new Guid();
+                    entity.Id = Guid.NewGuid();
                     _dbSet.Add(entity);
                 }
                 else
@@ -83,7 +83,7 @@ namespace ToolKit.DAL
             _context.SaveChanges();
         }
 
-        public void Delete(int id)
+        public virtual void Delete(int id)
         {
             var entityToDelete = _dbSet.Find(id);
             if (entityToDelete != null)
