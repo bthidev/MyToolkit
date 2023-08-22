@@ -1,9 +1,6 @@
-using System.Linq;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Toolkit.Entities;
 
 namespace Toolkit.Services
 {
