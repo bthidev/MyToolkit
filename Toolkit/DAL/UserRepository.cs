@@ -24,6 +24,11 @@ namespace Toolkit.DAL
                 await SaveAsync();
                 return user.Id;
             }
+            if(user != null)
+            {
+                return user.Id;
+            }
+
             return Guid.Empty;
         }
     }

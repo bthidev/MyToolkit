@@ -33,7 +33,7 @@ namespace Toolkit.Services
 
                                 var userId = await userManage
                                                 .GetOrCreateUserAsync(
-                                                    temp.FirstOrDefault(e => e.Type == "email")?.Value);
+                                                    temp.FirstOrDefault(e => e.Type.Contains("email"))?.Value);
 
                                 ctx.Principal.Identities.First()
                                     .AddClaim(new Claim("userId", userId.ToString()));
