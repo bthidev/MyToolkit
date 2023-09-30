@@ -17,14 +17,14 @@ namespace Toolkit.DAL
         public async Task<Guid> GetOrCreateUserAsync(string email)
         {
             var user = await _dbSet.FirstOrDefaultAsync(e => e.Email == email);
-            if (user == null && !string.IsNullOrEmpty(email)) 
+            if (user == null && !string.IsNullOrEmpty(email))
             {
                 user = new UserEntity() { Id = Guid.NewGuid(), Email = email };
                 _dbSet.Add(user);
                 await SaveAsync();
                 return user.Id;
             }
-            if(user != null)
+            if (user != null)
             {
                 return user.Id;
             }
