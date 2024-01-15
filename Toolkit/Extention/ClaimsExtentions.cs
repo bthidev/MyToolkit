@@ -9,9 +9,11 @@ namespace ToolKit.Extention
         public static string GetUserName(this ClaimsPrincipal user)
         {
             var claims = user.Claims.ToList();
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous
             return claims?.
                     Find(x =>
                         x.Type.Equals("preferred_username", StringComparison.OrdinalIgnoreCase))?.Value;
+#pragma warning restore S2589 // Boolean expressions should not be gratuitous
         }
     }
 }

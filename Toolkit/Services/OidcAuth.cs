@@ -18,14 +18,11 @@ namespace Toolkit.Services
                             ValidateAudience = false
                         };
                     });
-            services.AddAuthorization(o =>
-            {
-                o.DefaultPolicy = new AuthorizationPolicyBuilder()
+            services.AddAuthorizationBuilder()
+                .SetDefaultPolicy(new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .Build();
-
-                o.AddPolicy(adminRole, policy => policy.RequireAssertion(context => NewMethod(adminRole, context)));
-            });
+                    .Build())
+                .AddPolicy(adminRole, policy => policy.RequireAssertion(context => NewMethod(adminRole, context)));
         }
 
         private static bool NewMethod(string adminRole, AuthorizationHandlerContext context)

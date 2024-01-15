@@ -1,19 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ToolKit.Entities;
 
 namespace ToolKit.DAL
 {
-    public class GenericRepository<TEntity, TDto>
-    where TEntity : EntityBase
-    where TDto : DtoBase
+    public class GenericRepository<TEntity>
+        where TEntity : EntityBase
     {
-        private readonly DbContext _context;
-        private readonly DbSet<TEntity> _dbSet;
-        private readonly IMapper _mapper;
+#pragma warning disable CA1051 // Ne pas déclarer de champs d'instances visibles
+#pragma warning disable SA1401 // Fields should be private
+        protected DbContext _context;
+        protected DbSet<TEntity> _dbSet;
+        protected IMapper _mapper;
+#pragma warning restore SA1401 // Fields should be private
+#pragma warning restore CA1051 // Ne pas déclarer de champs d'instances visibles
 
         public GenericRepository(DbContext context, IMapper mapper)
         {
@@ -22,30 +26,37 @@ namespace ToolKit.DAL
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public virtual FilterResult<TDto> GetFilteredWithPagination(Func<TEntity, bool> filter, int page, int pageSize, object option)
+        public virtual async Task<IEnumerable<TDo>> GetAllAsync<TDo>()
         {
-            var filteredEntities = _dbSet.Where(filter).AsQueryable();
+            return _mapper.Map<IEnumerable<TDo>>(await _dbSet.ToListAsync());
+        }
+
+        public virtual async Task<FilterResult<TDo>> GetFilteredWithPaginationAsync<TDo>(int page, int pageSize, object option)
+        {
+            var filteredEntities = _dbSet.AsQueryable();
 
             // Call the virtual method to modify the query based on the provided option
             filteredEntities = ModifyQueryWithOption(filteredEntities, option);
 
             if (pageSize == -1)
             {
-                return new FilterResult<TDto>()
+                return new FilterResult<TDo>()
                 {
-                    Items = _mapper.ProjectTo<TDto>(filteredEntities),
+                    Items = _mapper.ProjectTo<TDo>(filteredEntities),
                     PageSize = pageSize,
                     PageNumber = page,
-                    Total = filteredEntities.Count()
+                    Total = await filteredEntities.CountAsync()
                 };
             }
 
-            return new FilterResult<TDto>()
+            var lists = filteredEntities.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            return new FilterResult<TDo>()
             {
-                Items = _mapper.ProjectTo<TDto>(filteredEntities.Skip((page - 1) * pageSize).Take(pageSize)),
+                Items = lists.Select(_mapper.Map<TDo>),
                 PageSize = pageSize,
                 PageNumber = page,
-                Total = filteredEntities.Count()
+                Total = await filteredEntities.CountAsync()
             };
         }
 
@@ -56,13 +67,13 @@ namespace ToolKit.DAL
             return query;
         }
 
-        public virtual TDto GetById(Guid id)
+        public virtual async Task<TDo> GetByIdAsync<TDo>(Guid id)
         {
-            var entity = _dbSet.First(e => e.Id == id);
-            return _mapper.Map<TDto>(entity);
+            var entity = await _dbSet.FirstOrDefaultAsync(e => e.Id == id);
+            return _mapper.Map<TDo>(entity);
         }
 
-        public virtual void UpdateOrCreate(IEnumerable<TDto> dtos)
+        public virtual async Task UpdateOrCreateAsync(IEnumerable<TEntity> dtos)
         {
             foreach (var dto in dtos)
             {
@@ -71,7 +82,7 @@ namespace ToolKit.DAL
                 if (entity.Id == Guid.Empty)
                 {
                     entity.Id = Guid.NewGuid();
-                    _dbSet.Add(entity);
+                    await _dbSet.AddAsync(entity);
                 }
                 else
                 {
@@ -80,16 +91,16 @@ namespace ToolKit.DAL
                 }
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public virtual void Delete(int id)
+        public virtual async Task DeleteAsync(int id)
         {
-            var entityToDelete = _dbSet.Find(id);
+            var entityToDelete = await _dbSet.FindAsync(id);
             if (entityToDelete != null)
             {
                 _dbSet.Remove(entityToDelete);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

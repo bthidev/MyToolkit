@@ -8,16 +8,11 @@ using Toolkit.Entities;
 
 namespace Toolkit.DAL.Mongo
 {
-    public class BaseMongoCrudRepository<TEntity> : IBaseMongoCrudRepository<TEntity>
+    public class BaseMongoCrudRepository<TEntity>(
+        IDatabaseProvider databaseProvider) : IBaseMongoCrudRepository<TEntity>
         where TEntity : IEntity
     {
-        private readonly IMongoDatabase _database;
-
-        public BaseMongoCrudRepository(
-            IDatabaseProvider databaseProvider)
-        {
-            _database = databaseProvider.DatabaseConnection;
-        }
+        private readonly IMongoDatabase _database = databaseProvider.DatabaseConnection;
 
         protected virtual string CollectionName
         {

@@ -11,7 +11,7 @@ namespace ToolKit.Services
 {
     public class S3Service : IDisposable
     {
-        private readonly IAmazonS3 _client;
+        private readonly AmazonS3Client _client;
         private readonly string _bucketName;
         private readonly ILogger<S3Service> _logger;
 

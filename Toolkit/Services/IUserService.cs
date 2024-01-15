@@ -17,16 +17,10 @@ namespace ToolKit.Services
         Task<bool> CreateUserAsync(string username, string password);
     }
 
-    public class UserService : IUserService
+    public class UserService(string secret, UsersManagement usersManagement) : IUserService
     {
-        private readonly string _secret;
-        private readonly UsersManagement _users;
-
-        public UserService(string secret, UsersManagement usersManagement)
-        {
-            _secret = secret;
-            _users = usersManagement;
-        }
+        private readonly string _secret = secret;
+        private readonly UsersManagement _users = usersManagement;
 
         public async Task<bool> CreateUserAsync(string username, string password)
         {

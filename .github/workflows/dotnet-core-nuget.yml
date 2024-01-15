@@ -3,11 +3,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    logLevel:
-      description: 'Log level'
-      required: true
-      derault: 'warning'
 
 jobs:
   build:
@@ -19,15 +14,15 @@ jobs:
     - name: Set Version
       run: echo "PACKAGE_VERSION=2.0.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
     - name: Display Version
-      run: echo $PACKAGE_VERSION    
+      run: echo $PACKAGE_VERSION
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release 
+      run: dotnet build --configuration Release
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Create artifacts folder
@@ -44,10 +39,10 @@ jobs:
     - name: Setup .NET Core for publish
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - name: Add source
       run: |
-        dotnet nuget add source "https://nuget.pkg.github.com/bthidev/index.json" --username bthidev --password ${{ secrets.pat_token }} --store-password-in-clear-text --name github 
+        dotnet nuget add source "https://nuget.pkg.github.com/bthidev/index.json" --username bthidev --password ${{ secrets.pat_token }} --store-password-in-clear-text --name github
     - name: Push packages to GitHub Packages NuGet feed
       run: |
         dotnet nuget push "$GITHUB_WORKSPACE/artifacts/Toolkit/Toolkit.$PACKAGE_VERSION.nupkg"  --api-key ${{ secrets.pat_token }} --source "github"

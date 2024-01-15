@@ -3,13 +3,8 @@ using System;
 namespace Toolkit.DAL.Mongo
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class MigrationAttribute : Attribute
+    public class MigrationAttribute(string name) : Attribute
     {
-        public string Name { get; }
-
-        public MigrationAttribute(string name)
-        {
-            Name = name;
-        }
+        public string Name { get; } = name;
     }
 }

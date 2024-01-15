@@ -4,16 +4,10 @@ using Microsoft.Extensions.Logging;
 
 namespace ToolKit.Services
 {
-    public class RequestLoggingMiddleware
+    public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
-
-        public RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
-        {
-            _next = next;
-            _logger = loggerFactory.CreateLogger<RequestLoggingMiddleware>();
-        }
+        private readonly RequestDelegate _next = next;
+        private readonly ILogger _logger = loggerFactory.CreateLogger<RequestLoggingMiddleware>();
 
         public async Task InvokeAsync(HttpContext context)
         {

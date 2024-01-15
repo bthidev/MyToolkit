@@ -7,14 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ToolKit.DAL
 {
-    public class UsersManagement
+    public class UsersManagement(IServiceScopeFactory dbBin)
     {
-        private readonly IServiceScopeFactory _db;
-
-        public UsersManagement(IServiceScopeFactory dbBin)
-        {
-            _db = dbBin;
-        }
+        private readonly IServiceScopeFactory _db = dbBin;
 
         public async Task<bool> CreateUserAsync(string username, string password)
         {

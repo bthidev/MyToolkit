@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ namespace Toolkit.Extention
     {
         public static async Task<T> GetJsonAsync<T>(this HttpClient client, string url)
         {
-            client.Timeout = TimeSpan.FromMinutes(30);
             var temp = await client.GetAsync(url).ConfigureAwait(true);
             _ = await temp.Content.ReadAsStringAsync().ConfigureAwait(true);
             if (temp.IsSuccessStatusCode)

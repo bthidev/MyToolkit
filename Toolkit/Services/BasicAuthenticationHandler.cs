@@ -7,25 +7,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ToolKit.Entities;
 using Toolkit.Extention;
+using ToolKit.Entities;
 
 namespace ToolKit.Services
 {
-    public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
+    public class BasicAuthenticationHandler(
+        IOptionsMonitor<BasicAuthenticationOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder) : AuthenticationHandler<BasicAuthenticationOptions>(options, logger, encoder)
     {
-        public BasicAuthenticationHandler(
-            IOptionsMonitor<BasicAuthenticationOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
-        {
-        }
-
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string authorizationHeader = Request.Headers["Authorization"];
+            string authorizationHeader = Request.Headers.Authorization;
             if (string.IsNullOrEmpty(authorizationHeader))
             {
                 return AuthenticateResult.NoResult();
