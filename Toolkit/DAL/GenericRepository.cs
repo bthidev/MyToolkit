@@ -94,7 +94,12 @@ namespace ToolKit.DAL
             await _context.SaveChangesAsync();
         }
 
-        public virtual async Task DeleteAsync(int id)
+        protected async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        public virtual async Task DeleteAsync(Guid id)
         {
             var entityToDelete = await _dbSet.FindAsync(id);
             if (entityToDelete != null)

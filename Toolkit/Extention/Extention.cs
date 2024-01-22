@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace Toolkit.Extention
             return default;
         }
 
-        public static async Task<T> PostJsonAsync<T>(this HttpClient client, string url, StringContent content)
+        public static async Task<T> PostJsonAsync<T>(this HttpClient client, string url, JsonContent content)
         {
             var temp = await client.PostAsync(url, content).ConfigureAwait(true);
             var tempSring = await temp.Content.ReadAsStringAsync().ConfigureAwait(true);
