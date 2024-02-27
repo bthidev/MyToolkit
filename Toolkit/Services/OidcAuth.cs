@@ -33,7 +33,7 @@ namespace Toolkit.Services
 
                                 var userId = await userManage
                                                 .GetOrCreateUserAsync(
-                                                    temp.FirstOrDefault(e => e.Type.Contains("cemail"))?.Value);
+                                                    temp.FirstOrDefault(e => e.Type.Contains("email"))?.Value);
 
                                 ctx.Principal.Identities.First()
                                     .AddClaim(new Claim("userId", userId.ToString()));
@@ -43,8 +43,8 @@ namespace Toolkit.Services
                         x.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateAudience = false,
-                            NameClaimType = "cemail",
-                            RoleClaimType = "CustomRole",
+                            NameClaimType = "email",
+                            RoleClaimType = "groups",
                         };
                     });
             services.AddAuthorization();

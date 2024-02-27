@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,27 +13,19 @@ namespace Toolkit.Services
         {
             app.UseAuthentication();
             app.UseAuthorization();
-
             return app;
         }
 
-        public static IServiceCollection RegisterLoginModule(
-            this IServiceCollection services,
-            string authUrl,
-            string clientId,
-            string clientSecret)
+        public static IServiceCollection RegisterLoginModule(this IServiceCollection services, string authUrl, string clientId, string clientSecret)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddAuthentication(options =>
+            services.AddAuthentication((AuthenticationOptions options) =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, opt =>
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "OpenIdConnect";
+            }).AddCookie("Cookies").AddOpenIdConnect("OpenIdConnect", (OpenIdConnectOptions opt) =>
             {
-                opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                opt.SignInScheme = "Cookies";
                 opt.SaveTokens = true;
                 opt.GetClaimsFromUserInfoEndpoint = true;
                 opt.RequireHttpsMetadata = false;
@@ -41,7 +33,6 @@ namespace Toolkit.Services
                 opt.ClientId = clientId;
                 opt.ClientSecret = clientSecret;
                 opt.ResponseType = "id_token";
-
                 opt.Scope.Add("openid");
                 opt.Scope.Add("profile");
                 opt.Scope.Add("offline_access");
@@ -57,16 +48,14 @@ namespace Toolkit.Services
                 opt.Scope.Add("phone");
                 opt.Scope.Add("address");
                 opt.Scope.Add("roles");
-
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "nickname",
-                    RoleClaimType = "CustomRole",
-                    SaveSigninToken = true,
+                    RoleClaimType = "groups",
+                    SaveSigninToken = true
                 };
             });
             services.AddAuthorizationCore();
-
             return services;
         }
     }
