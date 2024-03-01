@@ -15,14 +15,14 @@ namespace ToolKit.Services
         private readonly string _bucketName;
         private readonly ILogger<S3Service> _logger;
 
-        public S3Service(ILogger<S3Service> logger, string bucketName)
+        public S3Service(ILogger<S3Service> logger, string bucketName, string accessKey, string secretKey)
         {
             _logger = logger;
             _bucketName = bucketName;
             var options = new CredentialProfileOptions
             {
-                AccessKey = "access_key",
-                SecretKey = "secret_key",
+                AccessKey = accessKey,
+                SecretKey = secretKey
             };
             var profile = new CredentialProfile("basic_profile", options)
             {
