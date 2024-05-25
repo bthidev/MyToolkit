@@ -44,7 +44,7 @@ namespace Toolkit.Services
                         {
                             ValidateAudience = false,
                             NameClaimType = "email",
-                            RoleClaimType = "groups",
+                            RoleClaimType = "Role",
                         };
                     });
             services.AddAuthorization();
