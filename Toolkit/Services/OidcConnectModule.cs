@@ -1,9 +1,12 @@
+using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Toolkit.DAL;
 
 namespace Toolkit.Services
 {
@@ -18,6 +21,8 @@ namespace Toolkit.Services
 
         public static IServiceCollection RegisterLoginModule(this IServiceCollection services, string authUrl, string clientId, string clientSecret)
         {
+            services.AddScoped<UserRepository>();
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication((AuthenticationOptions options) =>
             {
@@ -53,6 +58,22 @@ namespace Toolkit.Services
                     NameClaimType = "nickname",
                     RoleClaimType = "groups",
                     SaveSigninToken = true
+                };
+                opt.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = async ctx =>
+                    {
+                        var userManage = ctx.HttpContext.RequestServices
+                                            .GetRequiredService<UserRepository>();
+                        var temp = ctx.Principal.Identities.FirstOrDefault()?.Claims;
+
+                        var userId = await userManage
+                                        .GetOrCreateUserAsync(
+                                            temp.FirstOrDefault(e => e.Type.Contains("email"))?.Value);
+
+                        ctx.Principal.Identities.First()
+                            .AddClaim(new Claim("userId", userId.ToString()));
+                    }
                 };
             });
             services.AddAuthorizationCore();

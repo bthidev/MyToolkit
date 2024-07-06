@@ -49,7 +49,7 @@ namespace ToolKit.DAL
                 };
             }
 
-            var lists = filteredEntities.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var lists = await filteredEntities.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
             return new FilterResult<TDo>()
             {

@@ -52,16 +52,22 @@ namespace ToolKit.Services
                     (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId", StringComparison.Ordinal) ||
                     amazonS3Exception.ErrorCode.Equals("InvalidSecurity", StringComparison.Ordinal)))
                 {
+#pragma warning disable S6667 // Logging in a catch clause should pass the caught exception as a parameter.
                     _logger.LogInformation("Please check the provided AWS Credentials.");
+#pragma warning restore S6667 // Logging in a catch clause should pass the caught exception as a parameter.
                     _logger.LogInformation("If you haven't signed up for Amazon S3, please visit http://aws.amazon.com/s3");
                 }
                 else
                 {
+#pragma warning disable S2629 // Logging templates should be constant
                     _logger.LogInformation($"An error occurred with the message '{0}' when deleting an object", amazonS3Exception.Message);
+#pragma warning restore S2629 // Logging templates should be constant
                 }
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S6667:Logging in a catch clause should pass the caught exception as a parameter.", Justification = "<En attente>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2629:Logging templates should be constant", Justification = "<En attente>")]
         public async Task WritingAnObjectAsync(string path, byte[] data)
         {
             try
